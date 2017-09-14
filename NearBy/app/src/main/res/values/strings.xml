@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">NearBy</string>
+    <string name="title_activity_home">NearBy</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!--START MAIN MENU-->
+    <string name="settings">Settings</string>
+    <!--END MAIN MENU-->
+
+    <!--START PREFERENCES-->
+    <string name="operationalModeTitle">Operational mode</string>
+    <string name="operationalModeKey">operationalMode</string>
+    <string name="realtimeValue">Realtime</string>
+    <string name="realtimeKey">realtime</string>
+    <string name="singleUpdateValue">Single update</string>
+    <string name="singleUpdateKey">singleUpdate</string>
+    <string name="operationalModeDefaultValue">@string/realtimeValue</string>
+    <string name="operationalModeDefaultKey">@string/realtimeKey</string>
+    <!--END PREFERENCES-->
+
+    <!--START LOAD-->
+    <string name="pleaseWait">Please wait ...</string>
+    <string name="noData">No data found !!</string>
+    <string name="somethingWrong">Something went wrong !!</string>
+    <!--END LOAD-->
+
 </resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="operationalMode_defaultValues">
+        <item>@string/realtimeValue</item>
+        <item>@string/singleUpdateValue</item>
+    </string-array>
+
+    <string-array name="operationalMode_defaultKeys">
+        <item>@string/realtimeKey</item>
+        <item>@string/singleUpdateKey</item>
+    </string-array>
+
+</resources>

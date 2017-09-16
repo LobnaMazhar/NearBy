@@ -57,8 +57,8 @@ public class HomeActivity extends AppCompatActivity {
     public void pushFragment(int fragmentID){
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        String tag = "";
-        Fragment fragment = null;
+        String tag;
+        Fragment fragment;
         switch (fragmentID){
             case PLACES_FRAGMENT_ID:
                 tag = PLACES_FRAGMENT_TAG;
@@ -89,4 +89,6 @@ public class HomeActivity extends AppCompatActivity {
             fragmentTransaction.addToBackStack(null);
         fragmentTransaction.add(R.id.content_frame, fragment, tag).commit();
     }
+
+    //TODO on shared pref. change list.
 }

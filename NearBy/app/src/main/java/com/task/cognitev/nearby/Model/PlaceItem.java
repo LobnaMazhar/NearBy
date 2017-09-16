@@ -7,9 +7,7 @@ import com.google.gson.JsonObject;
  */
 
 public class PlaceItem {
-    private JsonObject reasons;
     private PlaceVenue venue;
-    private String referralId;
 
     public PlaceVenue getVenue() {
         return venue;

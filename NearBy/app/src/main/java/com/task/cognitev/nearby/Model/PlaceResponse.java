@@ -9,12 +9,6 @@ import java.util.ArrayList;
  */
 
 public class PlaceResponse {
-    private JsonObject suggestedFilters;
-    private String headerLocation;
-    private String headerFullLocation;
-    private String headerLocationGranularity;
-    private int totalResults;
-    private JsonObject suggestedBounds;
     private ArrayList<PlaceGroup> groups;
 
     public ArrayList<PlaceGroup> getGroups() {

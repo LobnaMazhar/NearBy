@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
  * Created by Lobna on 9/14/2017.
  */
 
-public class Place {
+public class Venue_Place {
     private JsonObject meta;
     private PlaceResponse response;
 

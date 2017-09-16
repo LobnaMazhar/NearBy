@@ -5,8 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.task.cognitev.nearby.Model.Place;
-import com.task.cognitev.nearby.Model.PlaceGroup;
 import com.task.cognitev.nearby.Model.PlaceItem;
 import com.task.cognitev.nearby.ViewHolder.PlacesViewHolder;
 import com.task.cognitev.nearby.R;

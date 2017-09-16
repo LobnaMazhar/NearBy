@@ -7,8 +7,6 @@ import java.util.ArrayList;
  */
 
 public class PlaceGroup {
-    private String type;
-    private String name;
     private ArrayList<PlaceItem> items;
 
     public ArrayList<PlaceItem> getItems() {

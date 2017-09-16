@@ -10,7 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.task.cognitev.nearby.Adapter.PlacesAdapter;
+import com.task.cognitev.nearby.Connection.PlacesConnection;
 import com.task.cognitev.nearby.Model.Place;
+import com.task.cognitev.nearby.Model.PlaceGroup;
+import com.task.cognitev.nearby.Model.PlaceItem;
 import com.task.cognitev.nearby.R;
 
 import java.util.ArrayList;
@@ -31,16 +34,20 @@ public class PlacesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_places, container, false);
 
         placesList = rootView.findViewById(R.id.places_list);
-
         layoutManager = new LinearLayoutManager(getActivity());
         placesList.setLayoutManager(layoutManager);
-
-
-        // TODO fetch real data
-        ArrayList<Place> places = new ArrayList<>();
-        placesAdapter = new PlacesAdapter(getActivity(), places);
-        placesList.setAdapter(placesAdapter);
+        // TODO use real lat & long
+        PlacesConnection.getPlaces(getActivity(), this, "40.7", "-74");
 
         return rootView;
+    }
+
+    public void setPlaces(ArrayList<PlaceGroup> places){
+        ArrayList<PlaceItem> items = new ArrayList<>();
+        for(PlaceGroup placeGroup : places) {
+            items.addAll(placeGroup.getItems());
+        }
+        placesAdapter = new PlacesAdapter(getActivity(), items);
+        placesList.setAdapter(placesAdapter);
     }
 }

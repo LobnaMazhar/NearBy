@@ -6,6 +6,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.task.cognitev.nearby.Model.Place;
+import com.task.cognitev.nearby.Model.PlaceItem;
+import com.task.cognitev.nearby.Model.PlaceVenue;
 import com.task.cognitev.nearby.R;
 
 /**
@@ -26,7 +28,10 @@ public class PlacesViewHolder extends RecyclerView.ViewHolder {
         placeAddress = itemView.findViewById(R.id.place_address);
     }
 
-    public void bind(Place place){
-        // TODO bind place's data
+    public void bind(PlaceItem place){
+        PlaceVenue placeVenue = place.getVenue();
+        // TODO image
+        placeName.setText(placeVenue.getName());
+        placeAddress.setText(placeVenue.getLocation().getAddress());
     }
 }

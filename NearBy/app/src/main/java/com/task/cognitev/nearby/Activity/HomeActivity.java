@@ -32,6 +32,8 @@ public class HomeActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         fragmentManager = getSupportFragmentManager();
+
+        pushFragment(PLACES_FRAGMENT_ID);
     }
 
     @Override

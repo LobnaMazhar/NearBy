@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.task.cognitev.nearby.Model.Place;
+import com.task.cognitev.nearby.Model.PlaceGroup;
+import com.task.cognitev.nearby.Model.PlaceItem;
 import com.task.cognitev.nearby.ViewHolder.PlacesViewHolder;
 import com.task.cognitev.nearby.R;
 
@@ -18,9 +20,9 @@ import java.util.ArrayList;
 public class PlacesAdapter extends RecyclerView.Adapter<PlacesViewHolder> {
 
     private Activity activity;
-    private ArrayList<Place> places;
+    private ArrayList<PlaceItem> places;
 
-    public PlacesAdapter(Activity activity, ArrayList<Place> places) {
+    public PlacesAdapter(Activity activity, ArrayList<PlaceItem> places) {
         this.activity = activity;
         this.places = places;
     }

@@ -6,44 +6,51 @@
 
     <ImageView
         android:id="@+id/place_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="15dp"
         android:scaleType="fitXY"
         android:src="@drawable/ic_image"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/place_name"
-        android:layout_width="wrap_content"
+        android:layout_width="584dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center_horizontal"
         android:text="Place Name"
         android:textColor="@android:color/black"
-        android:textSize="18sp"
+        android:textSize="22sp"
         android:textStyle="bold"
-        app:layout_constraintLeft_toRightOf="@id/place_image"
-        app:layout_constraintTop_toTopOf="@id/place_image" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/place_image" />
 
     <TextView
         android:id="@+id/place_address"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Place address Place address Place address Place address Place address Place address Place address"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:text="Place address Place address Place address"
         android:textColor="@android:color/secondary_text_dark"
+        android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="@id/place_name"
-        app:layout_constraintTop_toBottomOf="@id/place_name" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/place_name" />
 
     <FrameLayout
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:background="@color/divider"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/place_image" />
+        app:layout_constraintTop_toBottomOf="@+id/place_address" />
 </android.support.constraint.ConstraintLayout>

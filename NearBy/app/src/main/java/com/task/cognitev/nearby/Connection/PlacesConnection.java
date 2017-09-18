@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.View;
 
 import com.android.volley.Cache;
 import com.android.volley.Network;
@@ -62,6 +63,7 @@ public class PlacesConnection {
                     Gson gson = new Gson();
                     Venue_Place place = gson.fromJson(response.toString(), Venue_Place.class);
                     ((HomeActivity) activity).swipeRefreshLayout.setRefreshing(false);
+                    ((HomeActivity) activity).loadingLayout.setVisibility(View.GONE);
                     int code = place.getMeta().get("code").getAsInt();
                     if (code == 200) {
                         PlaceResponse placeResponse;
@@ -82,6 +84,7 @@ public class PlacesConnection {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     ((HomeActivity) activity).swipeRefreshLayout.setRefreshing(false);
+                    ((HomeActivity) activity).loadingLayout.setVisibility(View.GONE);
                     Log.e(TAG, "Venues/places request error");
                     placesFragment.showError(activity.getString(R.string.noData));
                 }
@@ -92,6 +95,7 @@ public class PlacesConnection {
         } else {
             try {
                 ((HomeActivity) activity).swipeRefreshLayout.setRefreshing(false);
+                ((HomeActivity) activity).loadingLayout.setVisibility(View.GONE);
             } catch (Exception e){
 
             }

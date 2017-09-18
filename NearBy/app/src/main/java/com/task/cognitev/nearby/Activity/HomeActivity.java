@@ -10,10 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.task.cognitev.nearby.Fragment.PlacesFragment;
 import com.task.cognitev.nearby.R;
-import com.task.cognitev.nearby.Utilities.Utilities;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,7 +26,10 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private static final String PLACES_FRAGMENT_TAG = "placesFragment";
 
-    @BindView(R.id.swipeToRefresh) public SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.swipeToRefresh)
+    public SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.loadingLayout)
+    public LinearLayout loadingLayout;
 
     private static FragmentManager fragmentManager;
 
@@ -55,7 +60,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemID = item.getItemId();
-        switch (itemID){
+        switch (itemID) {
             case R.id.action_settings:
                 startActivity(new Intent(HomeActivity.this, SettingsActivity.class));
                 return true;
@@ -64,16 +69,16 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
         return super.onOptionsItemSelected(item);
     }
 
-    public static void getData(){
+    public static void getData() {
         pushFragment(PLACES_FRAGMENT_ID);
     }
 
-    public static void pushFragment(int fragmentID){
+    public static void pushFragment(int fragmentID) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         String tag;
         Fragment fragment;
-        switch (fragmentID){
+        switch (fragmentID) {
             case PLACES_FRAGMENT_ID:
                 tag = PLACES_FRAGMENT_TAG;
                 fragment = new PlacesFragment();
@@ -90,7 +95,7 @@ public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         }
 
-        if(!fragment.isVisible())
+        if (!fragment.isVisible())
             fragmentTransaction.addToBackStack(null);
 
         fragmentTransaction.replace(R.id.content_frame, fragment, tag).commit();

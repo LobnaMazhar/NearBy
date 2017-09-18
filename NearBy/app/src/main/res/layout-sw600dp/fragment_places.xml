@@ -1,52 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/places_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/noDataErrorLayout"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:orientation="vertical"
         android:visibility="gone">
 
         <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/ic_exclamation"/>
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:src="@drawable/ic_exclamation" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
+            android:text="@string/noData"
             android:textColor="@android:color/black"
-            android:text="@string/noData"/>
+            android:textSize="30sp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/connectionErrorLayout"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:visibility="gone">
+        android:orientation="vertical"
+        android:visibility="visible">
 
         <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/ic_bad_connection"/>
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:src="@drawable/ic_bad_connection" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
+            android:text="@string/somethingWrong"
             android:textColor="@android:color/black"
-            android:text="@string/somethingWrong"/>
+            android:textSize="30sp" />
     </LinearLayout>
 </FrameLayout>

@@ -55,8 +55,6 @@ public class PlacesFragment extends Fragment implements
 
     private static Activity activity;
 
-    @BindView(R.id.loadingPlacesProgressBar)
-    ProgressBar loadingPlacesProgressBar;
     @BindView(R.id.places_list)
     RecyclerView placesList;
     private RecyclerView.LayoutManager layoutManager;
@@ -66,8 +64,6 @@ public class PlacesFragment extends Fragment implements
     private static ArrayList<PlaceGroup> places;
     private static PlacesAdapter placesAdapter;
 
-    @BindView(R.id.loadingLayout)
-    LinearLayout loadingLayout;
     @BindView(R.id.noDataErrorLayout)
     LinearLayout noDataError;
     @BindView(R.id.connectionErrorLayout)
@@ -157,6 +153,7 @@ public class PlacesFragment extends Fragment implements
                         geofencing.updateGeofencesList(location);
                         geofencing.registerAllGeofences();
                         try {
+
                             PlacesConnection.getPlaces(activity, thisFragment,
                                     String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
                         } catch (Exception e) {
@@ -183,7 +180,6 @@ public class PlacesFragment extends Fragment implements
     public void setPlaces(ArrayList<PlaceGroup> placeslist) {
         places = placeslist;
 
-        loadingLayout.setVisibility(View.GONE);
         connectionError.setVisibility(View.GONE);
         noDataError.setVisibility(View.GONE);
         placesList.setVisibility(View.VISIBLE);
@@ -198,13 +194,11 @@ public class PlacesFragment extends Fragment implements
 
     public void showError(String error) {
         if (error.equals(activity.getString(R.string.noData))) {
-            loadingLayout.setVisibility(View.GONE);
             placesList.setVisibility(View.GONE);
             connectionError.setVisibility(View.GONE);
             noDataError.setVisibility(View.VISIBLE);
 
         } else if (error.equals(activity.getString(R.string.somethingWrong))) {
-            loadingLayout.setVisibility(View.GONE);
             placesList.setVisibility(View.GONE);
             noDataError.setVisibility(View.GONE);
             connectionError.setVisibility(View.VISIBLE);

@@ -12,6 +12,6 @@ public class PlaceResponse {
     private ArrayList<PlaceGroup> groups;
 
     public ArrayList<PlaceGroup> getGroups() {
-        return groups;
+        return this.groups;
     }
 }

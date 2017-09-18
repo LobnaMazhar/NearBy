@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
+import com.task.cognitev.nearby.Activity.HomeActivity;
 import com.task.cognitev.nearby.Fragment.PlacesFragment;
 import com.task.cognitev.nearby.R;
 import com.task.cognitev.nearby.Utilities.Utilities;
@@ -25,7 +26,7 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         switch (geofenceTransition){
             case Geofence.GEOFENCE_TRANSITION_EXIT:
                 if(Utilities.getOperationalMode(context).equals(context.getString(R.string.realtimeValue))){
-                    PlacesFragment.getUserLocation();
+                    HomeActivity.getData();
                 }
                 break;
             default:

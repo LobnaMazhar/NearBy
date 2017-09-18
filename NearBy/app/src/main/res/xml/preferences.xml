@@ -4,7 +4,7 @@
     <ListPreference
         android:title="@string/operationalModeTitle"
         android:key="@string/operationalModeKey"
-        android:defaultValue="@string/operationalModeDefaultValue"
+        android:defaultValue="@string/operationalModeDefaultKey"
         android:entries="@array/operationalMode_defaultValues"
         android:entryValues="@array/operationalMode_defaultKeys"
         android:icon="@mipmap/ic_launcher" />

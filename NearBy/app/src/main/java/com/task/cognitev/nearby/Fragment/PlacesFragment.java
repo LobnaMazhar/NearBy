@@ -2,19 +2,14 @@ package com.task.cognitev.nearby.Fragment;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +17,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -39,6 +36,9 @@ import com.task.cognitev.nearby.Utilities.Utilities;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Lobna on 9/14/2017.
  */
@@ -48,44 +48,78 @@ public class PlacesFragment extends Fragment implements
         GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = PlacesFragment.class.getSimpleName();
+    private final PlacesFragment thisFragment = this;
 
     private static final int REQUEST_ACCESS_FINE_LOCATION_PERMISSION = 639;
+    private static final String SAVED_PLACES_KEY = "placesKey";
 
     private static Activity activity;
 
-    private static RecyclerView placesList;
+    @BindView(R.id.loadingPlacesProgressBar)
+    ProgressBar loadingPlacesProgressBar;
+    @BindView(R.id.places_list)
+    RecyclerView placesList;
     private RecyclerView.LayoutManager layoutManager;
     private static FusedLocationProviderClient fusedLocationProviderClient;
     private GoogleApiClient googleApiClient;
     private static Geofencing geofencing;
+    private static ArrayList<PlaceGroup> places;
     private static PlacesAdapter placesAdapter;
+
+    @BindView(R.id.loadingLayout)
+    LinearLayout loadingLayout;
+    @BindView(R.id.noDataErrorLayout)
+    LinearLayout noDataError;
+    @BindView(R.id.connectionErrorLayout)
+    LinearLayout connectionError;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_places, container, false);
 
+        ButterKnife.bind(this, rootView);
+
         activity = getActivity();
 
-        placesList = rootView.findViewById(R.id.places_list);
         layoutManager = new LinearLayoutManager(getActivity());
         placesList.setLayoutManager(layoutManager);
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        if (savedInstanceState != null && savedInstanceState.containsKey(SAVED_PLACES_KEY)) {
+            setPlaces(places);
+        } else {
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
-        googleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .addApi(Places.GEO_DATA_API)
-                .enableAutoManage(getActivity(), this)
-                .build();
-        geofencing = new Geofencing(googleApiClient, getActivity());
+            googleApiClient = new GoogleApiClient.Builder(getActivity())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .addApi(Places.GEO_DATA_API)
+                    .enableAutoManage(getActivity(), this)
+                    .build();
 
+            geofencing = new Geofencing(googleApiClient, getActivity());
+
+        }
         return rootView;
     }
 
-    public static void getUserLocation() {
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        getUserLocation();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, "API Client Connection Suspended!");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.e(TAG, "API Client Connection Failed!");
+    }
+
+    public void getUserLocation() {
         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -114,7 +148,7 @@ public class PlacesFragment extends Fragment implements
             return;
         }
 
-        if(Utilities.checkLocationAvailability(activity)) {
+        if (Utilities.checkLocationAvailability(activity)) {
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(activity, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
@@ -122,14 +156,18 @@ public class PlacesFragment extends Fragment implements
                         geofencing.unRegisterAllGeofences();
                         geofencing.updateGeofencesList(location);
                         geofencing.registerAllGeofences();
-                        PlacesConnection.getPlaces(activity,
-                                String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
+                        try {
+                            PlacesConnection.getPlaces(activity, thisFragment,
+                                    String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
+                        } catch (Exception e) {
+
+                        }
                     } else {
                         throw new NullPointerException("NULL Location");
                     }
                 }
             });
-        } else{
+        } else {
             Utilities.noLocation(activity);
         }
     }
@@ -142,7 +180,14 @@ public class PlacesFragment extends Fragment implements
         }
     }
 
-    public static void setPlaces(ArrayList<PlaceGroup> places) {
+    public void setPlaces(ArrayList<PlaceGroup> placeslist) {
+        places = placeslist;
+
+        loadingLayout.setVisibility(View.GONE);
+        connectionError.setVisibility(View.GONE);
+        noDataError.setVisibility(View.GONE);
+        placesList.setVisibility(View.VISIBLE);
+
         ArrayList<PlaceItem> items = new ArrayList<>();
         for (PlaceGroup placeGroup : places) {
             items.addAll(placeGroup.getItems());
@@ -151,26 +196,35 @@ public class PlacesFragment extends Fragment implements
         placesList.setAdapter(placesAdapter);
     }
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        getUserLocation();
-    }
+    public void showError(String error) {
+        if (error.equals(activity.getString(R.string.noData))) {
+            loadingLayout.setVisibility(View.GONE);
+            placesList.setVisibility(View.GONE);
+            connectionError.setVisibility(View.GONE);
+            noDataError.setVisibility(View.VISIBLE);
 
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.i(TAG, "API Client Connection Suspended!");
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e(TAG, "API Client Connection Failed!");
-    }
-
-    @Override
-    public void onResume() {
-        if (Utilities.getOperationalMode(getActivity()).equals(getActivity().getString(R.string.realtimeValue))) {
-            PlacesFragment.getUserLocation();
+        } else if (error.equals(activity.getString(R.string.somethingWrong))) {
+            loadingLayout.setVisibility(View.GONE);
+            placesList.setVisibility(View.GONE);
+            noDataError.setVisibility(View.GONE);
+            connectionError.setVisibility(View.VISIBLE);
         }
-        super.onResume();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (googleApiClient != null && googleApiClient.isConnected()) {
+            googleApiClient.stopAutoManage(getActivity());
+            googleApiClient.disconnect();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (places != null) {
+            outState.putParcelableArrayList(SAVED_PLACES_KEY, places);
+        }
     }
 }

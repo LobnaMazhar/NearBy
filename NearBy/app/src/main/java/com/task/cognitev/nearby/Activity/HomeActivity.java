@@ -5,24 +5,28 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.task.cognitev.nearby.Fragment.ErrorFragment;
 import com.task.cognitev.nearby.Fragment.PlacesFragment;
 import com.task.cognitev.nearby.R;
+import com.task.cognitev.nearby.Utilities.Utilities;
 
-public class HomeActivity extends AppCompatActivity {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class HomeActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final int PLACES_FRAGMENT_ID = 726;
-    public static final int ERROR_FRAGMENT_ID = 103;
 
     private static final String PLACES_FRAGMENT_TAG = "placesFragment";
-    private static final String ERROR_FRAGMENT_TAG = "errorFragment";
 
-    private FragmentManager fragmentManager;
+    @BindView(R.id.swipeToRefresh) public SwipeRefreshLayout swipeRefreshLayout;
+
+    private static FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +35,13 @@ public class HomeActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        ButterKnife.bind(this);
+
         fragmentManager = getSupportFragmentManager();
+
+        swipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary)
+                , getResources().getColor(R.color.colorPrimaryDark), getResources().getColor(R.color.colorAccent));
+        swipeRefreshLayout.setOnRefreshListener(this);
 
         pushFragment(PLACES_FRAGMENT_ID);
     }
@@ -54,7 +64,11 @@ public class HomeActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void pushFragment(int fragmentID){
+    public static void getData(){
+        pushFragment(PLACES_FRAGMENT_ID);
+    }
+
+    public static void pushFragment(int fragmentID){
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         String tag;
@@ -62,16 +76,7 @@ public class HomeActivity extends AppCompatActivity {
         switch (fragmentID){
             case PLACES_FRAGMENT_ID:
                 tag = PLACES_FRAGMENT_TAG;
-                fragment = fragmentManager.findFragmentByTag(tag);
-                if(fragment == null)
-                    fragment = new PlacesFragment();
-                break;
-
-            case ERROR_FRAGMENT_ID:
-                tag = ERROR_FRAGMENT_TAG;
-                fragment = fragmentManager.findFragmentByTag(tag);
-                if(fragment == null)
-                    fragment = new ErrorFragment();
+                fragment = new PlacesFragment();
                 break;
 
             default:
@@ -87,8 +92,20 @@ public class HomeActivity extends AppCompatActivity {
 
         if(!fragment.isVisible())
             fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.add(R.id.content_frame, fragment, tag).commit();
+
+        fragmentTransaction.replace(R.id.content_frame, fragment, tag).commit();
     }
 
-    //TODO on shared pref. change list.
+    /*@Override
+    public void onResume() {
+        if (Utilities.getOperationalMode(this).equals(this.getString(R.string.realtimeValue))) {
+            getData();
+        }
+        super.onResume();
+    }*/
+
+    @Override
+    public void onRefresh() {
+        getData();
+    }
 }

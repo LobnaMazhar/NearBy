@@ -1,6 +1,8 @@
 package com.task.cognitev.nearby.Connection;
 
+import android.app.Activity;
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.android.volley.Cache;
@@ -13,13 +15,19 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
+import com.task.cognitev.nearby.Activity.HomeActivity;
 import com.task.cognitev.nearby.BuildConfig;
 import com.task.cognitev.nearby.Fragment.PlacesFragment;
+import com.task.cognitev.nearby.Model.PlaceGroup;
+import com.task.cognitev.nearby.Model.PlaceResponse;
 import com.task.cognitev.nearby.Model.Venue_Place;
+import com.task.cognitev.nearby.R;
 import com.task.cognitev.nearby.Utilities.GlobalVariables;
 import com.task.cognitev.nearby.Utilities.Utilities;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import static com.android.volley.Request.Method.GET;
 
@@ -32,9 +40,9 @@ public class PlacesConnection {
     private static final String TAG = "getPlacesTag";
     private static RequestQueue requestQueue;
 
-    public static void getPlaces(Context context, String latitude, String longitude) {
-        if(Utilities.checkNetworkConnectivity(context)) {
-            Cache cache = new DiskBasedCache(context.getCacheDir(), 1024 * 1024);
+    public static void getPlaces(final Activity activity, final PlacesFragment placesFragment, String latitude, String longitude) {
+        if (Utilities.checkNetworkConnectivity(activity)) {
+            Cache cache = new DiskBasedCache(activity.getCacheDir(), 1024 * 1024);
             Network network = new BasicNetwork(new HurlStack());
 
             requestQueue = new RequestQueue(cache, network);
@@ -53,25 +61,42 @@ public class PlacesConnection {
                 public void onResponse(JSONObject response) {
                     Gson gson = new Gson();
                     Venue_Place place = gson.fromJson(response.toString(), Venue_Place.class);
+                    ((HomeActivity) activity).swipeRefreshLayout.setRefreshing(false);
                     int code = place.getMeta().get("code").getAsInt();
                     if (code == 200) {
-                        PlacesFragment.setPlaces(place.getResponse().getGroups());
-                    } else {
-                        Log.e(TAG, "Venues/places response error " + String.valueOf(code));
+                        PlaceResponse placeResponse;
+                        if ((placeResponse = place.getResponse()) != null) {
+                            ArrayList<PlaceGroup> placeGroups = placeResponse.getGroups();
+                            if (placeGroups != null) {
+                                placesFragment.setPlaces(place.getResponse().getGroups());
+                                return;
+                            }
+                        }
                     }
+                    // If not returned then no data
+                    Log.e(TAG, "Venues/places response error " + String.valueOf(code));
+                    placesFragment.showError(activity.getString(R.string.noData));
+
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    ((HomeActivity) activity).swipeRefreshLayout.setRefreshing(false);
                     Log.e(TAG, "Venues/places request error");
+                    placesFragment.showError(activity.getString(R.string.noData));
                 }
             });
             request.setTag(TAG);
 
             requestQueue.add(request);
         } else {
-            Utilities.noInternet(context);
-            //TODO push no network
+            try {
+                ((HomeActivity) activity).swipeRefreshLayout.setRefreshing(false);
+            } catch (Exception e){
+
+            }
+            Utilities.noInternet(activity);
+            placesFragment.showError(activity.getString(R.string.somethingWrong));
         }
     }
 }

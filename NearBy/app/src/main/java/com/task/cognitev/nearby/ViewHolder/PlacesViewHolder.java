@@ -13,22 +13,23 @@ import com.task.cognitev.nearby.Model.PlaceItem;
 import com.task.cognitev.nearby.Model.PlaceVenue;
 import com.task.cognitev.nearby.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Lobna on 9/14/2017.
  */
 
 public class PlacesViewHolder extends RecyclerView.ViewHolder {
 
-    private ImageView placeImage;
-    private TextView placeName;
-    private TextView placeAddress;
+    @BindView (R.id.place_image) ImageView placeImage;
+    @BindView(R.id.place_name) TextView placeName;
+    @BindView(R.id.place_address) TextView placeAddress;
 
     public PlacesViewHolder(View itemView) {
         super(itemView);
 
-        placeImage = itemView.findViewById(R.id.place_image);
-        placeName = itemView.findViewById(R.id.place_name);
-        placeAddress = itemView.findViewById(R.id.place_address);
+        ButterKnife.bind(this, itemView);
     }
 
     public void bind(PlaceItem place){

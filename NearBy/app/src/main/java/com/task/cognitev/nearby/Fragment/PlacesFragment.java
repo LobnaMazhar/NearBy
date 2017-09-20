@@ -3,6 +3,7 @@ package com.task.cognitev.nearby.Fragment;
 import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -18,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -26,6 +26,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.task.cognitev.nearby.Activity.HomeActivity;
 import com.task.cognitev.nearby.Adapter.PlacesAdapter;
 import com.task.cognitev.nearby.Connection.PlacesConnection;
 import com.task.cognitev.nearby.Model.PlaceGroup;
@@ -48,26 +49,22 @@ public class PlacesFragment extends Fragment implements
         GoogleApiClient.OnConnectionFailedListener {
 
     private static final String TAG = PlacesFragment.class.getSimpleName();
-    private final PlacesFragment thisFragment = this;
-
     private static final int REQUEST_ACCESS_FINE_LOCATION_PERMISSION = 639;
     private static final String SAVED_PLACES_KEY = "placesKey";
-
     private static Activity activity;
-
-    @BindView(R.id.places_list)
-    RecyclerView placesList;
-    private RecyclerView.LayoutManager layoutManager;
     private static FusedLocationProviderClient fusedLocationProviderClient;
-    private GoogleApiClient googleApiClient;
     private static Geofencing geofencing;
     private static ArrayList<PlaceGroup> places;
     private static PlacesAdapter placesAdapter;
-
+    private final PlacesFragment thisFragment = this;
+    @BindView(R.id.places_list)
+    RecyclerView placesList;
     @BindView(R.id.noDataErrorLayout)
     LinearLayout noDataError;
     @BindView(R.id.connectionErrorLayout)
     LinearLayout connectionError;
+    private RecyclerView.LayoutManager layoutManager;
+    private GoogleApiClient googleApiClient;
 
     @Nullable
     @Override
@@ -118,6 +115,7 @@ public class PlacesFragment extends Fragment implements
     public void getUserLocation() {
         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
+
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder
@@ -126,8 +124,8 @@ public class PlacesFragment extends Fragment implements
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                ActivityCompat.requestPermissions(activity,
-                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_ACCESS_FINE_LOCATION_PERMISSION);
+                                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        REQUEST_ACCESS_FINE_LOCATION_PERMISSION);
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -138,8 +136,8 @@ public class PlacesFragment extends Fragment implements
                         })
                         .show();
             } else {
-                ActivityCompat.requestPermissions(activity,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_ACCESS_FINE_LOCATION_PERMISSION);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_ACCESS_FINE_LOCATION_PERMISSION);
             }
             return;
         }
@@ -153,19 +151,18 @@ public class PlacesFragment extends Fragment implements
                         geofencing.updateGeofencesList(location);
                         geofencing.registerAllGeofences();
                         try {
-
                             PlacesConnection.getPlaces(activity, thisFragment,
                                     String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
                         } catch (Exception e) {
-
+                            Log.e(TAG, e.getMessage());
                         }
                     } else {
-                        throw new NullPointerException("NULL Location");
+                        showError(getString(R.string.somethingWrong));
                     }
                 }
             });
         } else {
-            Utilities.noLocation(activity);
+            Utilities.noLocation((HomeActivity) activity, thisFragment);
         }
     }
 
@@ -202,6 +199,15 @@ public class PlacesFragment extends Fragment implements
             placesList.setVisibility(View.GONE);
             noDataError.setVisibility(View.GONE);
             connectionError.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case Utilities.LOCATION_SETTINGS_RESULT_CODE:
+                getUserLocation();
         }
     }
 

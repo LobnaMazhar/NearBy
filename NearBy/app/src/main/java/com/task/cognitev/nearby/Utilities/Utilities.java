@@ -1,6 +1,5 @@
 package com.task.cognitev.nearby.Utilities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +11,8 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 
+import com.task.cognitev.nearby.Activity.HomeActivity;
+import com.task.cognitev.nearby.Fragment.PlacesFragment;
 import com.task.cognitev.nearby.R;
 
 /**
@@ -19,6 +20,8 @@ import com.task.cognitev.nearby.R;
  */
 
 public class Utilities {
+    public static final int LOCATION_SETTINGS_RESULT_CODE = 201;
+
     public static boolean checkNetworkConnectivity(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();
@@ -52,7 +55,7 @@ public class Utilities {
         return false;
     }
 
-    public static void noLocation(final Activity activity){
+    public static void noLocation(final HomeActivity activity, final PlacesFragment placesFragment) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(activity);
         dialog.setTitle("Location")
                 .setMessage("Location is not enabled");
@@ -60,11 +63,18 @@ public class Utilities {
             @Override
             public void onClick(DialogInterface paramDialogInterface, int paramInt) {
                 Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                activity.startActivity(myIntent);
-                //get gps
+//                activity.startActivityForResult(myIntent, LOCATION_SETTINGS_RESULT_CODE);
+                placesFragment.startActivityForResult(myIntent, LOCATION_SETTINGS_RESULT_CODE);
             }
         });
-        dialog.setNegativeButton("Cancel", null);
+        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                placesFragment.getUserLocation();
+            }
+        });
         dialog.show();
     }
+
+
 }

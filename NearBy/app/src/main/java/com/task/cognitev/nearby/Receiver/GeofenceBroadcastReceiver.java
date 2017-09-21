@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
@@ -25,8 +26,8 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         int geofenceTransition = GeofencingEvent.fromIntent(intent).getGeofenceTransition();
         switch (geofenceTransition){
             case Geofence.GEOFENCE_TRANSITION_EXIT:
-                if(Utilities.getOperationalMode(context).equals(context.getString(R.string.realtimeValue))){
-                    HomeActivity.getData();
+                if(Utilities.getOperationalMode(context).equals(context.getString(R.string.realtimeKey))){
+                    HomeActivity.changeLocation();
                 }
                 break;
             default:

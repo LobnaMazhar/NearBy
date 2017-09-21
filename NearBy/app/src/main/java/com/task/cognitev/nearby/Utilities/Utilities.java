@@ -63,7 +63,6 @@ public class Utilities {
             @Override
             public void onClick(DialogInterface paramDialogInterface, int paramInt) {
                 Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//                activity.startActivityForResult(myIntent, LOCATION_SETTINGS_RESULT_CODE);
                 placesFragment.startActivityForResult(myIntent, LOCATION_SETTINGS_RESULT_CODE);
             }
         });

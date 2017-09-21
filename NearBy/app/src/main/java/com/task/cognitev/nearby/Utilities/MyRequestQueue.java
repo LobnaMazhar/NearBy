@@ -7,6 +7,9 @@ import android.util.LruCache;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
@@ -24,12 +27,15 @@ public class MyRequestQueue {
 
     private MyRequestQueue(Context context) {
         MyRequestQueue.context = context;
-        requestQueue = getRequestQueue();
+        requestQueue = Volley.newRequestQueue(context);
+        DiskBasedCache cache = new DiskBasedCache(context.getCacheDir(), 16 * 1024 * 1024);
+        requestQueue = new RequestQueue(cache, new BasicNetwork(new HurlStack()));
+        requestQueue.start();
 
         imageLoader = new ImageLoader(requestQueue,
                 new ImageLoader.ImageCache() {
                     private final LruCache<String, Bitmap>
-                            cache = new LruCache<String, Bitmap>(20);
+                            cache = new LruCache<>(20);
 
                     @Override
                     public Bitmap getBitmap(String url) {

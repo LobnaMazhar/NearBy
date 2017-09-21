@@ -19,12 +19,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.task.cognitev.nearby.Activity.HomeActivity;
 import com.task.cognitev.nearby.Adapter.PlacesAdapter;
@@ -44,11 +46,10 @@ import butterknife.ButterKnife;
  * Created by Lobna on 9/14/2017.
  */
 
-public class PlacesFragment extends Fragment implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+public class PlacesFragment extends Fragment {
 
     private static final String TAG = PlacesFragment.class.getSimpleName();
+
     private static final int REQUEST_ACCESS_FINE_LOCATION_PERMISSION = 639;
     private static final String SAVED_PLACES_KEY = "placesKey";
     private static Activity activity;
@@ -64,7 +65,6 @@ public class PlacesFragment extends Fragment implements
     @BindView(R.id.connectionErrorLayout)
     LinearLayout connectionError;
     private RecyclerView.LayoutManager layoutManager;
-    private GoogleApiClient googleApiClient;
 
     @Nullable
     @Override
@@ -83,33 +83,14 @@ public class PlacesFragment extends Fragment implements
         } else {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
-            googleApiClient = new GoogleApiClient.Builder(getActivity())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .addApi(Places.GEO_DATA_API)
-                    .enableAutoManage(getActivity(), this)
-                    .build();
-
-            geofencing = new Geofencing(googleApiClient, getActivity());
-
+            geofencing = HomeActivity.geofencing;
+            if (geofencing != null) {
+                getUserLocation();
+            } else {
+                Log.e(TAG, "Google api client is null");
+            }
         }
         return rootView;
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        getUserLocation();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.i(TAG, "API Client Connection Suspended!");
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e(TAG, "API Client Connection Failed!");
     }
 
     public void getUserLocation() {
@@ -148,7 +129,7 @@ public class PlacesFragment extends Fragment implements
                 public void onSuccess(Location location) {
                     if (location != null) {
                         geofencing.unRegisterAllGeofences();
-                        geofencing.updateGeofencesList(location);
+                        geofencing.updateGeofencesList(location.getLatitude(), location.getLongitude());
                         geofencing.registerAllGeofences();
                         try {
                             PlacesConnection.getPlaces(activity, thisFragment,
@@ -159,6 +140,11 @@ public class PlacesFragment extends Fragment implements
                     } else {
                         showError(getString(R.string.somethingWrong));
                     }
+                }
+            }).addOnFailureListener(activity, new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, "Failed to get location " + e.getMessage());
                 }
             });
         } else {
@@ -208,15 +194,6 @@ public class PlacesFragment extends Fragment implements
         switch (requestCode) {
             case Utilities.LOCATION_SETTINGS_RESULT_CODE:
                 getUserLocation();
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (googleApiClient != null && googleApiClient.isConnected()) {
-            googleApiClient.stopAutoManage(getActivity());
-            googleApiClient.disconnect();
         }
     }
 

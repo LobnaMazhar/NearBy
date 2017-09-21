@@ -1,11 +1,11 @@
 package com.task.cognitev.nearby.Utilities;
 
+import android.app.Activity;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Result;
@@ -31,11 +31,20 @@ public class Geofencing implements ResultCallback {
     private List<Geofence> geofenceList;
     private PendingIntent geofencePendingIntent;
     private GoogleApiClient googleApiClient;
-    private Context context;
+    private Activity activity;
+    private static Geofencing instance;
 
-    public Geofencing(GoogleApiClient googleApiClient, Context context) {
+    private Geofencing(GoogleApiClient googleApiClient, Activity activity) {
         this.googleApiClient = googleApiClient;
-        this.context = context;
+        this.activity = activity;
+        this.geofenceList = new ArrayList<>();
+    }
+
+    public static synchronized Geofencing getInstance(GoogleApiClient googleApiClient, Activity activity) {
+        if (instance == null) {
+            instance = new Geofencing(googleApiClient, activity);
+        }
+        return instance;
     }
 
     public void registerAllGeofences() {
@@ -51,13 +60,12 @@ public class Geofencing implements ResultCallback {
                     getGeofencePendingIntent()
             ).setResultCallback(this);
         } catch (SecurityException securityException) {
-            // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.
             Log.e(TAG, securityException.getMessage());
         }
     }
 
     public void unRegisterAllGeofences() {
-        if (googleApiClient == null || !googleApiClient.isConnected()) {
+       if (googleApiClient == null || !googleApiClient.isConnected()) {
             return;
         }
         try {
@@ -66,48 +74,42 @@ public class Geofencing implements ResultCallback {
                     getGeofencePendingIntent()
             ).setResultCallback(this);
         } catch (SecurityException securityException) {
-            // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.
             Log.e(TAG, securityException.getMessage());
         }
     }
 
-    public void updateGeofencesList(Location location) {
-        geofenceList = new ArrayList<>();
-        if (location == null) return;
+    public void updateGeofencesList(double latitude, double longitude) {
+        geofenceList.clear();
 
-        // Build a Geofence object
         Geofence geofence = new Geofence.Builder()
-                .setRequestId(String.valueOf(location.getLatitude()) + ",," + String.valueOf(location.getLongitude()))
+                .setRequestId(String.valueOf(latitude) + ",," + String.valueOf(longitude))
                 .setExpirationDuration(EXPIRATION_DURATION)
-                .setCircularRegion(location.getLatitude(), location.getLongitude(), GEOFENCE_RADIUS)
+                .setCircularRegion(latitude, longitude, GEOFENCE_RADIUS)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_EXIT)
                 .build();
-        // Add it to the list
         geofenceList.add(geofence);
     }
 
     private GeofencingRequest getGeofencingRequest() {
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_EXIT);
         builder.addGeofences(geofenceList);
         return builder.build();
     }
 
     private PendingIntent getGeofencePendingIntent() {
-        // Reuse the PendingIntent if we already have it.
         if (geofencePendingIntent != null) {
             return geofencePendingIntent;
         }
-        Intent intent = new Intent(context, GeofenceBroadcastReceiver.class);
-        geofencePendingIntent = PendingIntent.getBroadcast(context, 0, intent,
+        Intent intent = new Intent(activity, GeofenceBroadcastReceiver.class);
+        geofencePendingIntent = PendingIntent.getBroadcast(activity, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         return geofencePendingIntent;
     }
 
     @Override
     public void onResult(@NonNull Result result) {
-        /*Log.e(TAG, String.format("Error adding/removing geofence : %s",
-                result.getStatus().toString()));*/
-        // TODO on results leeh error ??
+        Log.e(TAG, String.format("Error adding/removing geofence : %s",
+                result.getStatus().toString()));
     }
 }

@@ -4,12 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 import com.task.cognitev.nearby.Activity.HomeActivity;
-import com.task.cognitev.nearby.Fragment.PlacesFragment;
 import com.task.cognitev.nearby.R;
 import com.task.cognitev.nearby.Utilities.Utilities;
 
@@ -24,9 +22,9 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         int geofenceTransition = GeofencingEvent.fromIntent(intent).getGeofenceTransition();
-        switch (geofenceTransition){
+        switch (geofenceTransition) {
             case Geofence.GEOFENCE_TRANSITION_EXIT:
-                if(Utilities.getOperationalMode(context).equals(context.getString(R.string.realtimeKey))){
+                if (Utilities.getOperationalMode(context).equals(context.getString(R.string.realtimeKey))) {
                     HomeActivity.changeLocation();
                 }
                 break;

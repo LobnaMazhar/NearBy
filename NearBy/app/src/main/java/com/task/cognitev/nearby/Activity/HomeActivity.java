@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -23,7 +22,6 @@ import com.google.android.gms.location.places.Places;
 import com.task.cognitev.nearby.Fragment.PlacesFragment;
 import com.task.cognitev.nearby.R;
 import com.task.cognitev.nearby.Utilities.Geofencing;
-import com.task.cognitev.nearby.Utilities.Utilities;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -140,9 +138,9 @@ public class HomeActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    public static void changeLocation(){
+    public static void changeLocation() {
         Fragment placesFragment = fragmentManager.findFragmentByTag(PLACES_FRAGMENT_TAG);
-        if(placesFragment != null)
+        if (placesFragment != null)
             ((PlacesFragment) placesFragment).getUserLocation();
         else getData();
     }

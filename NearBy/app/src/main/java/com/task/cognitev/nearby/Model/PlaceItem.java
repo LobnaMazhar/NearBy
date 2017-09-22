@@ -1,7 +1,5 @@
 package com.task.cognitev.nearby.Model;
 
-import com.google.gson.JsonObject;
-
 /**
  * Created by Lobna on 9/16/2017.
  */

@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Result;
@@ -65,7 +64,7 @@ public class Geofencing implements ResultCallback {
     }
 
     public void unRegisterAllGeofences() {
-       if (googleApiClient == null || !googleApiClient.isConnected()) {
+        if (googleApiClient == null || !googleApiClient.isConnected()) {
             return;
         }
         try {

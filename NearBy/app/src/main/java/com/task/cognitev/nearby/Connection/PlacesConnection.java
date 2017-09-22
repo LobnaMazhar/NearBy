@@ -3,7 +3,6 @@ package com.task.cognitev.nearby.Connection;
 import android.app.Activity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.android.volley.Cache;
 import com.android.volley.NetworkResponse;
@@ -66,7 +65,7 @@ public class PlacesConnection {
                 ((HomeActivity) activity).swipeRefreshLayout.setRefreshing(false);
                 ((HomeActivity) activity).loadingLayout.setVisibility(View.GONE);
                 Log.e(TAG, "Venues/places request error");
-                if(!loaded) {
+                if (!loaded) {
                     if (!Utilities.checkNetworkConnectivity(activity)) {
                         Utilities.noInternet(activity);
                         placesFragment.showError(activity.getString(R.string.somethingWrong));

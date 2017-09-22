@@ -1,7 +1,5 @@
 package com.task.cognitev.nearby.Model;
 
-import com.google.gson.JsonObject;
-
 import java.util.ArrayList;
 
 /**

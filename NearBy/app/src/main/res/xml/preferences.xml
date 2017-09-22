@@ -2,11 +2,11 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-        android:title="@string/operationalModeTitle"
-        android:key="@string/operationalModeKey"
         android:defaultValue="@string/operationalModeDefaultKey"
         android:entries="@array/operationalMode_defaultValues"
         android:entryValues="@array/operationalMode_defaultKeys"
-        android:icon="@mipmap/ic_launcher" />
+        android:icon="@mipmap/ic_launcher"
+        android:key="@string/operationalModeKey"
+        android:title="@string/operationalModeTitle" />
 
 </PreferenceScreen>

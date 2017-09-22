@@ -40,7 +40,7 @@ public class Utilities {
         builder.show();
     }
 
-    public static String getOperationalMode(Context context){
+    public static String getOperationalMode(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String operationalMode = sharedPreferences.getString(context.getString(R.string.operationalModeKey),
                 context.getResources().getString(R.string.operationalModeDefaultKey));

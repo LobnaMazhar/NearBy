@@ -27,10 +27,7 @@ public class MyRequestQueue {
 
     private MyRequestQueue(Context context) {
         MyRequestQueue.context = context;
-        requestQueue = Volley.newRequestQueue(context);
-        DiskBasedCache cache = new DiskBasedCache(context.getCacheDir(), 16 * 1024 * 1024);
-        requestQueue = new RequestQueue(cache, new BasicNetwork(new HurlStack()));
-        requestQueue.start();
+        requestQueue = getRequestQueue();
 
         imageLoader = new ImageLoader(requestQueue,
                 new ImageLoader.ImageCache() {

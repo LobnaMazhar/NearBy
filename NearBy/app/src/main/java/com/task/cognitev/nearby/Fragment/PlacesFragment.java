@@ -128,12 +128,15 @@ public class PlacesFragment extends Fragment {
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null) {
+                        double latitude = location.getLatitude();
+                        double longitude = location.getLongitude();
                         geofencing.unRegisterAllGeofences();
-                        geofencing.updateGeofencesList(location.getLatitude(), location.getLongitude());
+                        geofencing.updateGeofencesList(latitude, longitude);
                         geofencing.registerAllGeofences();
                         try {
+                            Log.v(TAG, "Latitude :: " + String.valueOf(latitude) + ",, Longitude :: " + String.valueOf(longitude));
                             PlacesConnection.getPlaces(activity, thisFragment,
-                                    String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
+                                    String.valueOf(latitude), String.valueOf(longitude));
                         } catch (Exception e) {
                             Log.e(TAG, e.getMessage());
                         }
@@ -168,11 +171,13 @@ public class PlacesFragment extends Fragment {
         placesList.setVisibility(View.VISIBLE);
 
         ArrayList<PlaceItem> items = new ArrayList<>();
-        for (PlaceGroup placeGroup : places) {
-            items.addAll(placeGroup.getItems());
-        }
         placesAdapter = new PlacesAdapter(activity, items);
         placesList.setAdapter(placesAdapter);
+        for (PlaceGroup placeGroup : places) {
+            items.addAll(placeGroup.getItems());
+            placesAdapter.notifyDataSetChanged();
+        }
+
     }
 
     public void showError(String error) {

@@ -158,7 +158,7 @@ public class PlacesFragment extends Fragment {
                                     Log.e(TAG, "Failed to get location " + e.getMessage());
                                 }
                             });
-                        }else{
+                        } else {
                             getUserLocation();
                         }
                     }

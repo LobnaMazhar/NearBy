@@ -19,8 +19,8 @@ android {
     }
 
     buildTypes.each{
-        it.buildConfigField 'String','CLIENT_ID', 'ADD YOUR CLIENT_ID HERE'
-        it.buildConfigField 'String','CLIENT_SECRET', 'ADD YOUR CLIENT_SECRET HERE'
+        it.buildConfigField 'String','CLIENT_ID', '"ADD YOUR CLIENT_ID HERE"'
+        it.buildConfigField 'String','CLIENT_SECRET', '"ADD YOUR CLIENT_SECRET HERE"'
     }
 }
 

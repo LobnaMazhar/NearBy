@@ -21,9 +21,12 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.task.cognitev.nearby.Activity.HomeActivity;
 import com.task.cognitev.nearby.Adapter.PlacesAdapter;
 import com.task.cognitev.nearby.Connection.PlacesConnection;
@@ -120,30 +123,45 @@ public class PlacesFragment extends Fragment {
         }
 
         if (Utilities.checkLocationAvailability(activity)) {
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(activity, new OnSuccessListener<Location>() {
+            fusedLocationProviderClient.getLocationAvailability().addOnCompleteListener(activity, new OnCompleteListener<LocationAvailability>() {
                 @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        double latitude = location.getLatitude();
-                        double longitude = location.getLongitude();
-                        geofencing.unRegisterAllGeofences();
-                        geofencing.updateGeofencesList(latitude, longitude);
-                        geofencing.registerAllGeofences();
-                        try {
-                            Log.v(TAG, "Latitude :: " + String.valueOf(latitude) + ",, Longitude :: " + String.valueOf(longitude));
-                            PlacesConnection.getPlaces(activity, thisFragment,
-                                    String.valueOf(latitude), String.valueOf(longitude));
-                        } catch (Exception e) {
-                            Log.e(TAG, e.getMessage());
+                public void onComplete(@NonNull Task<LocationAvailability> task) {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        if (task.getResult().isLocationAvailable()) {
+                            if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                getUserLocation();
+                                return;
+                            }
+                            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(activity, new OnSuccessListener<Location>() {
+                                @Override
+                                public void onSuccess(Location location) {
+                                    if (location != null) {
+                                        double latitude = location.getLatitude();
+                                        double longitude = location.getLongitude();
+                                        geofencing.unRegisterAllGeofences();
+                                        geofencing.updateGeofencesList(latitude, longitude);
+                                        geofencing.registerAllGeofences();
+                                        try {
+                                            Log.v(TAG, "Latitude :: " + String.valueOf(latitude) + ",, Longitude :: " + String.valueOf(longitude));
+                                            PlacesConnection.getPlaces(activity, thisFragment,
+                                                    String.valueOf(latitude), String.valueOf(longitude));
+                                        } catch (Exception e) {
+                                            Log.e(TAG, e.getMessage());
+                                        }
+                                    } else {
+                                        showError(getString(R.string.somethingWrong));
+                                    }
+                                }
+                            }).addOnFailureListener(activity, new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.e(TAG, "Failed to get location " + e.getMessage());
+                                }
+                            });
+                        }else{
+                            getUserLocation();
                         }
-                    } else {
-                        showError(getString(R.string.somethingWrong));
                     }
-                }
-            }).addOnFailureListener(activity, new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.e(TAG, "Failed to get location " + e.getMessage());
                 }
             });
         } else {

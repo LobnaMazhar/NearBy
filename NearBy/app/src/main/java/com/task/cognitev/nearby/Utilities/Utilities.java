@@ -10,6 +10,7 @@ import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
+import android.widget.Toast;
 
 import com.task.cognitev.nearby.Activity.HomeActivity;
 import com.task.cognitev.nearby.Fragment.PlacesFragment;
